@@ -8,18 +8,18 @@ module.exports = {
             option.setName('user')
                 .setDescription('The member to timeout')
                 .setRequired(true))
-        .addStringOption(option =>
-            option.setName('reason')
-                .setDescription('The reason for timeout')
-                .setRequired(false))
         .addIntegerOption(option =>
             option.setName('duration')
                 .setDescription('The duration of the timeout in minutes')
-                .setRequired(true)),
+                .setRequired(true))
+        .addStringOption(option =>
+            option.setName('reason')
+                .setDescription('The reason for timeout')
+                .setRequired(false)),
     async execute(interaction) {
         const member = interaction.options.getMember('user');
-        const reason = interaction.options.getString('reason') || 'No reason provided';
         const duration = interaction.options.getInteger('duration');
+        const reason = interaction.options.getString('reason') || 'No reason provided';
         const logChannel = interaction.guild.channels.cache.find(ch => ch.name === 'log');
 
         if (member) {
