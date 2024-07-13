@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -11,6 +12,25 @@ module.exports = {
     async execute(interaction) {
         const user = interaction.options.getUser('target');
         const member = interaction.guild.members.cache.get(user.id);
-        await interaction.reply(`User: ${user.tag}\nJoined at: ${member.joinedAt}\nRoles: ${member.roles.cache.map(role => role.name).join(', ')}`);
+
+        const roles = member.roles.cache
+            .filter(role => role.name !== '@everyone')
+            .map(role => role.name)
+            .join(', ') || 'None';
+
+        const embed = new EmbedBuilder()
+            .setColor('#0099ff')
+            .setTitle(`${user.tag}'s Info`)
+            .setThumbnail(user.displayAvatarURL())
+            .addFields(
+                { name: 'User Tag', value: user.tag, inline: false },
+                { name: 'Joined Server', value: member.joinedAt.toDateString(), inline: true },
+                { name: 'Account Created', value: user.createdAt.toDateString(), inline: true },
+                { name: 'Roles', value: roles, inline: false }
+            )
+            .setTimestamp()
+            .setFooter({ text: `ID: ${user.id}` });
+
+        await interaction.reply({ embeds: [embed] });
     },
 };

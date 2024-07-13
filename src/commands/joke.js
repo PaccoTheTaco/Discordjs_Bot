@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const { EmbedBuilder } = require('discord.js');
 const axios = require('axios');
 
 module.exports = {
@@ -9,10 +10,23 @@ module.exports = {
         try {
             const response = await axios.get('https://official-joke-api.appspot.com/random_joke');
             const joke = response.data;
-            await interaction.reply(`${joke.setup}\n${joke.punchline}`);
+
+            const embed = new EmbedBuilder()
+                .setColor('#FFFF00')
+                .setTitle('Here\'s a joke for you!')
+                .setDescription(`${joke.setup}\n\n||${joke.punchline}||`)
+                .setTimestamp();
+
+            await interaction.reply({ embeds: [embed] });
         } catch (error) {
             console.error('Error:', error);
-            await interaction.reply('Could not retrieve joke. Please try again.');
+            const errorEmbed = new EmbedBuilder()
+                .setColor('#FF0000')
+                .setTitle('Error')
+                .setDescription('Could not retrieve joke. Please try again.')
+                .setTimestamp();
+
+            await interaction.reply({ embeds: [errorEmbed] });
         }
     },
 };

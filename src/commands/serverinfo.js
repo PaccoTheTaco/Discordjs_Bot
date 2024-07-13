@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,6 +17,22 @@ module.exports = {
             console.error('Error fetching owner:', error);
         }
 
-        await interaction.reply(`Server name: ${name}\nTotal members: ${memberCount}\nCreated at: ${createdAt}\nServer owner: ${ownerTag}`);
+        const embed = new EmbedBuilder()
+            .setColor('#0099ff')
+            .setTitle(`${name}'s Info`)
+            .addFields(
+                { name: 'Server Name', value: name, inline: true },
+                { name: 'Total Members', value: `${memberCount}`, inline: true },
+                { name: 'Created At', value: createdAt.toDateString(), inline: false },
+                { name: 'Server Owner', value: ownerTag, inline: true }
+            )
+            .setTimestamp();
+
+        // Add the server icon if it exists
+        if (guild.iconURL()) {
+            embed.setThumbnail(guild.iconURL());
+        }
+
+        await interaction.reply({ embeds: [embed] });
     },
 };
