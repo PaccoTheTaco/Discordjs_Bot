@@ -2,6 +2,7 @@ require('dotenv').config();
 const { Client, GatewayIntentBits, REST, Routes } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+const { Collection } = require('discord.js');
 
 const client = new Client({
     intents: [
@@ -16,7 +17,7 @@ const client = new Client({
 const TOKEN = process.env.DISCORD_TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 
-client.commands = new Map();
+client.commands = new Collection();
 
 const commandFiles = fs.readdirSync(path.join(__dirname, 'commands')).filter(file => file.endsWith('.js'));
 
@@ -25,7 +26,11 @@ for (const file of commandFiles) {
     client.commands.set(command.data.name, command);
 }
 
-const commands = Array.from(client.commands.values()).map(command => command.data.toJSON());
+const commands = Array.from(client.commands.values()).map(command => ({
+    name: command.data.name,
+    description: command.data.description,
+    options: command.data.options || [],
+}));
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 
