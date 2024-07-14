@@ -22,14 +22,15 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setColor('#FF0000')
-            .setTitle('Goodbye!')
+            .setTitle('Auf Wiedersehen!')
             .setDescription(randomMessage)
             .addFields(
-                { name: 'Member since', value: joinDate.toDateString(), inline: true },
-                { name: 'Days on server', value: `${duration} days`, inline: true }
+                { name: 'Mitglied seit', value: joinDate.toDateString(), inline: true },
+                { name: 'Tage auf dem Server', value: `${duration} Tage`, inline: true }
             )
-            .setThumbnail(member.user.displayAvatarURL())
-            .setTimestamp();
+            .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+            .setTimestamp()
+            .setFooter({ text: `ID: ${member.id}` });
 
         channel.send({ embeds: [embed] });
     },

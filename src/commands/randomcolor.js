@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const { EmbedBuilder } = require('discord.js');
 
 function getRandomColor() {
     const letters = '0123456789ABCDEF';
@@ -12,9 +13,17 @@ function getRandomColor() {
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('randomcolor')
-        .setDescription('Generate a random color'),
+        .setDescription('Generiere eine zufällige Farbe'),
     async execute(interaction) {
         const color = getRandomColor();
-        await interaction.reply(`Random Color: ${color}`);
+
+        const embed = new EmbedBuilder()
+            .setColor(color)
+            .setTitle('🎨 Zufällige Farbe')
+            .setDescription(`Die zufällig generierte Farbe ist: **${color}**`)
+            .setFooter({ text: `Angefordert von ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
+            .setTimestamp();
+
+        await interaction.reply({ embeds: [embed] });
     }
 };

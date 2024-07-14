@@ -4,15 +4,15 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('rps')
-        .setDescription('Play Rock-Paper-Scissors')
+        .setDescription('Spiele Schere-Stein-Papier')
         .addStringOption(option =>
             option.setName('choice')
-                .setDescription('Your choice')
+                .setDescription('Deine Wahl')
                 .setRequired(true)
                 .addChoices(
-                    { name: 'rock', value: 'rock' },
-                    { name: 'paper', value: 'paper' },
-                    { name: 'scissors', value: 'scissors' }
+                    { name: 'Stein', value: 'rock' },
+                    { name: 'Papier', value: 'paper' },
+                    { name: 'Schere', value: 'scissors' }
                 )),
     async execute(interaction) {
         const userChoice = interaction.options.getString('choice');
@@ -23,28 +23,29 @@ module.exports = {
         let color = '';
 
         if (userChoice === botChoice) {
-            result = 'It\'s a tie!';
-            color = '#FFFFFF'; // Weiß
+            result = 'Unentschieden!';
+            color = '#FFFF00'; // Gelb
         } else if (
             (userChoice === 'rock' && botChoice === 'scissors') ||
             (userChoice === 'paper' && botChoice === 'rock') ||
             (userChoice === 'scissors' && botChoice === 'paper')
         ) {
-            result = 'You win!';
+            result = 'Du gewinnst!';
             color = '#00FF00'; // Grün
         } else {
-            result = 'You lose!';
+            result = 'Du verlierst!';
             color = '#FF0000'; // Rot
         }
 
         const embed = new EmbedBuilder()
             .setColor(color)
-            .setTitle('Rock-Paper-Scissors')
+            .setTitle('🪨📄✂️ Schere-Stein-Papier')
             .addFields(
-                { name: 'Your Choice', value: userChoice, inline: true },
-                { name: 'Bot\'s Choice', value: botChoice, inline: true },
-                { name: 'Result', value: result, inline: false }
+                { name: 'Deine Wahl', value: userChoice.charAt(0).toUpperCase() + userChoice.slice(1), inline: true },
+                { name: 'Wahl des Bots', value: botChoice.charAt(0).toUpperCase() + botChoice.slice(1), inline: true },
+                { name: 'Ergebnis', value: result, inline: false }
             )
+            .setFooter({ text: `Angefordert von ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
             .setTimestamp();
 
         await interaction.reply({ embeds: [embed] });

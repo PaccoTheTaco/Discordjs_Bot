@@ -4,10 +4,10 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('userinfo')
-        .setDescription('Get information about a user')
+        .setDescription('Erhalte Informationen über einen Benutzer')
         .addUserOption(option =>
             option.setName('target')
-                .setDescription('The user to get information about')
+                .setDescription('Der Benutzer, über den Informationen abgerufen werden sollen')
                 .setRequired(true)),
     async execute(interaction) {
         const user = interaction.options.getUser('target');
@@ -16,17 +16,17 @@ module.exports = {
         const roles = member.roles.cache
             .filter(role => role.name !== '@everyone')
             .map(role => role.name)
-            .join(', ') || 'None';
+            .join(', ') || 'Keine';
 
         const embed = new EmbedBuilder()
             .setColor('#0099ff')
             .setTitle(`${user.tag}'s Info`)
-            .setThumbnail(user.displayAvatarURL())
+            .setThumbnail(user.displayAvatarURL({ dynamic: true }))
             .addFields(
-                { name: 'User Tag', value: user.tag, inline: false },
-                { name: 'Joined Server', value: member.joinedAt.toDateString(), inline: true },
-                { name: 'Account Created', value: user.createdAt.toDateString(), inline: true },
-                { name: 'Roles', value: roles, inline: false }
+                { name: 'Benutzertag', value: user.tag, inline: false },
+                { name: 'Beigetreten am', value: member.joinedAt.toDateString(), inline: true },
+                { name: 'Konto erstellt am', value: user.createdAt.toDateString(), inline: true },
+                { name: 'Rollen', value: roles, inline: false }
             )
             .setTimestamp()
             .setFooter({ text: `ID: ${user.id}` });

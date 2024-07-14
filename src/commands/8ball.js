@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -10,6 +11,10 @@ module.exports = {
                 .setRequired(true)),
     async execute(interaction) {
         const question = interaction.options.getString('frage');
+
+        if (!question.endsWith('?')) {
+            return interaction.reply({ content: 'Bitte stelle eine gültige Ja/Nein-Frage, die mit einem Fragezeichen endet.', ephemeral: true });
+        }
 
         const responses = [
             'Ja.',
@@ -24,7 +29,30 @@ module.exports = {
             'Zweifelhaft.'
         ];
 
-        const response = responses[Math.floor(Math.random() * responses.length)];
-        await interaction.reply(response);
+        const emojis = [
+            '👍',
+            '👎',
+            '🤔',
+            '✅',
+            '⏳',
+            '❓',
+            '🌟',
+            '✨',
+            '😕',
+            '❗'
+        ];
+
+        const randomIndex = Math.floor(Math.random() * responses.length);
+        const response = responses[randomIndex];
+        const emoji = emojis[randomIndex];
+
+        const embed = new EmbedBuilder()
+            .setColor('#0099ff')
+            .setTitle('🎱 8ball Antwort')
+            .setDescription(`${emoji} **${response}**`)
+            .addFields({ name: 'Frage', value: question })
+            .setTimestamp();
+
+        await interaction.reply({ embeds: [embed] });
     },
 };

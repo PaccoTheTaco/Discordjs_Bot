@@ -1,28 +1,48 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const { EmbedBuilder } = require('discord.js');
 const translate = require('translate-google');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('translate')
-        .setDescription('Translate text to a specified language')
+        .setDescription('Übersetze Text in eine angegebene Sprache')
         .addStringOption(option =>
             option.setName('text')
-                .setDescription('Text to translate')
+                .setDescription('Zu übersetzender Text')
                 .setRequired(true))
         .addStringOption(option =>
             option.setName('language')
-                .setDescription('Language to translate to (e.g., en, es, fr)')
+                .setDescription('Sprache, in die übersetzt werden soll (z.B., en, es, fr)')
                 .setRequired(true)),
     async execute(interaction) {
         const text = interaction.options.getString('text');
         const language = interaction.options.getString('language');
 
         try {
-            const res = await translate(text, { to: language });
-            await interaction.reply(`Translation: ${res}`);
+            const translatedText = await translate(text, { to: language });
+
+            const embed = new EmbedBuilder()
+                .setColor('#1E90FF')
+                .setTitle('🌐 Übersetzung')
+                .addFields(
+                    { name: 'Originaltext', value: text },
+                    { name: 'Übersetzt in', value: language },
+                    { name: 'Übersetzung', value: translatedText }
+                )
+                .setFooter({ text: `Angefordert von ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
+                .setTimestamp();
+
+            await interaction.reply({ embeds: [embed] });
         } catch (error) {
-            console.error('Error during translation:', error);
-            await interaction.reply(`Failed to translate text. Error: ${error.message}`);
+            console.error('Fehler bei der Übersetzung:', error);
+
+            const errorEmbed = new EmbedBuilder()
+                .setColor('#FF0000')
+                .setTitle('Fehler')
+                .setDescription(`Fehler bei der Übersetzung des Textes. Fehler: ${error.message}`)
+                .setTimestamp();
+
+            await interaction.reply({ embeds: [errorEmbed] });
         }
     }
 };

@@ -5,7 +5,7 @@ const axios = require('axios');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('joke')
-        .setDescription('Tell a random joke'),
+        .setDescription('Erzähle einen zufälligen Witz'),
     async execute(interaction) {
         try {
             const response = await axios.get('https://official-joke-api.appspot.com/random_joke');
@@ -13,8 +13,9 @@ module.exports = {
 
             const embed = new EmbedBuilder()
                 .setColor('#FFFF00')
-                .setTitle('Here\'s a joke for you!')
+                .setTitle('Hier ist ein Witz für dich!')
                 .setDescription(`${joke.setup}\n\n||${joke.punchline}||`)
+                .setFooter({ text: `Angefordert von ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
                 .setTimestamp();
 
             await interaction.reply({ embeds: [embed] });
@@ -22,8 +23,8 @@ module.exports = {
             console.error('Error:', error);
             const errorEmbed = new EmbedBuilder()
                 .setColor('#FF0000')
-                .setTitle('Error')
-                .setDescription('Could not retrieve joke. Please try again.')
+                .setTitle('Fehler')
+                .setDescription('Konnte keinen Witz abrufen. Bitte versuche es erneut.')
                 .setTimestamp();
 
             await interaction.reply({ embeds: [errorEmbed] });
